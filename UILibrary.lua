@@ -12,21 +12,26 @@
 
 	QUICK START
 	-----------
-		local Window = Library.new({
-			Title       = "My Menu",
-			Description = "made with this library",
-			AccentColor = Color3.fromRGB(133, 127, 255),
-		});
 
-		local Tab     = Window:NewTab({ Title = "Main" });
-		local Section = Tab:NewSection({ Title = "General", Position = "Left" });
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary.lua"))()
 
-		Section:NewToggle({
-			Title    = "Example toggle",
-			Default  = false,
-			Flag     = "exampleToggle",   -- optional, see Flags below
-			Callback = function(value) end,
-		});
+local Window = Library.new({
+    Title       = "My Menu",
+    Description = "made with this library",
+    AccentColor = Color3.fromRGB(133, 127, 255),
+})
+
+local Tab     = Window:NewTab({ Title = "Main" })
+local Section = Tab:NewSection({ Title = "General", Position = "Left" })
+
+Section:NewToggle({
+    Title    = "Example toggle",
+    Default  = false,
+    Flag     = "exampleToggle",
+    Callback = function(value)
+        print("Toggle status:", value)
+    end,
+})
 
 	WHAT'S NEW IN THIS PASS
 	------------------------
