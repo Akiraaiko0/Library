@@ -8,9 +8,17 @@ No dependencies. Drop in one file and go.
 
 ---
 
+## Preview
+
+*(Add a screenshot or short GIF of the UI here, e.g. `![preview](./preview.png)`)*
+
+---
+
 ## Table of Contents
 
+- [Preview](#preview)
 - [Features](#features)
+- [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [API Reference](#api-reference)
@@ -35,8 +43,10 @@ No dependencies. Drop in one file and go.
   - [Library.Notification — toasts](#librarynotification)
   - [Library:Console — terminal easter egg](#libraryconsole)
 - [Tips & Best Practices](#tips--best-practices)
+- [FAQ](#faq)
 - [Compatibility](#compatibility)
 - [Changelog](#changelog)
+- [Contributing](#contributing)
 - [Credits](#credits)
 - [License](#license)
 
@@ -57,16 +67,34 @@ No dependencies. Drop in one file and go.
 
 ---
 
+## Project Structure
+
+| File | Purpose |
+|---|---|
+| [`UILibrary.lua`](./UILibrary.lua) | The library itself — the only file you need to load with `loadstring` |
+| [`UILibrary_Demo.lua`](./UILibrary_Demo.lua) | A full demo that exercises every function below — use it as a working reference |
+| `README.md` | This file |
+
+---
+
 ## Installation
 
-Save `UILibrary.lua` somewhere your executor can read it, then load it with `loadstring`. The file's last line is `return table.freeze(Library)`, so it **must** be loaded as its own chunk — don't paste it directly above your own script in the same file, or that top-level `return` will stop your script right there.
+`UILibrary.lua` ends with `return table.freeze(Library)`, so it **must** be loaded through `loadstring` as its own chunk — don't paste its contents directly above your own script in the same file, or that top-level `return` will stop your script right there.
+
+### Option A — load straight from GitHub (recommended)
 
 ```lua
--- from a local file in your executor's workspace folder
-local Library = loadstring(readfile("UILibrary.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary.lua"))()
+```
 
--- or from a URL
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/you/your-repo/main/UILibrary.lua"))()
+This always pulls the latest version from this repo's `main` branch. It needs the game (or your executor) to allow HTTP requests.
+
+### Option B — load from a local file
+
+Useful offline, or if HTTP requests are blocked where you're running it. Save `UILibrary.lua` to your executor's workspace folder, then:
+
+```lua
+local Library = loadstring(readfile("UILibrary.lua"))()
 ```
 
 ---
@@ -74,7 +102,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/you/y
 ## Quick Start
 
 ```lua
-local Library = loadstring(readfile("UILibrary.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary.lua"))()
 
 local Window = Library.new({
     Title       = "My Menu",
@@ -316,6 +344,12 @@ Section:NewColorPicker({
 | `Window:LoadConfig(name: string)` | Reads a previously saved config and applies it. Returns `true`/`false` |
 | `Window.Flags` | Table of `{ [flagName] = { Get, Set, Type } }` — see below |
 
+```lua
+Window:SetAccentColor(Color3.fromRGB(255, 80, 80))
+Window:SetRainbow(true)  -- cycles the accent color continuously
+Window:SetRainbow(false) -- stop and keep whatever color it last landed on
+```
+
 ---
 
 ## Flags & config persistence
@@ -432,6 +466,25 @@ Library:Console()
 
 ---
 
+## FAQ
+
+**`game:HttpGet(...)` is erroring, something like "HTTP requests are not enabled".**
+The game or your executor has HTTP requests turned off. Download `UILibrary.lua` and load it locally with `readfile` instead — see [Option B](#installation) under Installation.
+
+**My tab/section icons aren't showing up.**
+Icon names are resolved against a list fetched live over HTTP when the library first loads. If that request fails (no internet, HTTP disabled, the host going down) short names won't resolve. Either pass a full `rbxassetid://...` string as `Icon`, or omit it entirely to use the built-in default.
+
+**`SaveConfig`/`LoadConfig` always return `false`.**
+Your executor doesn't expose `writefile` / `readfile` / `isfile` / `makefolder` / `isfolder`. Check your executor's own documentation for which file-system functions it supports, if any.
+
+**Can I use this in Roblox Studio?**
+No. It's built for script executors — it relies on executor-only globals like `gethui` (with safe fallbacks to `CoreGui`) and expects to be loaded with `loadstring`, which Studio's normal script contexts don't allow.
+
+**Can I change the window title, keybind, etc. after creating it?**
+Not directly for `Title`/`Keybind` today — set them once in `Library.new({...})`. Most per-element and whole-window *style* things (accent color, theme, rainbow) can be changed anytime through the `Window:Set...` methods above.
+
+---
+
 ## Compatibility
 
 - Written in **Luau** (Roblox's Lua dialect) — not vanilla Lua. Function parameter type annotations and other Luau-only syntax are used throughout.
@@ -452,6 +505,16 @@ Library:Console()
 - **Fixed:** `Section:NewTextbox` now returns a proper `{ Visible, Value }` API, like every other element.
 - **Fixed:** Slider, Dropdown and Keybind now track their own current value correctly instead of only ever firing a callback.
 - Refreshed the default accent color.
+
+---
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+- Found a bug? Open an issue with a short repro (what you called, what you expected, what happened).
+- Proposing a new element or API change? Include a usage example in the description, in the same style as the ones in [API Reference](#api-reference).
+- Keep PRs focused — one feature or fix per PR is easier to review than several bundled together.
 
 ---
 
