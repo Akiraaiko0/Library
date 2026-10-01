@@ -71,8 +71,8 @@ No dependencies. Drop in one file and go.
 
 | File | Purpose |
 |---|---|
-| [`UILibrary.lua`](./UILibrary.lua) | The library itself — the only file you need to load with `loadstring` |
-| [`UILibrary_Demo.lua`](./UILibrary_Demo.lua) | A full demo that exercises every function below — use it as a working reference |
+| [`UILibrary.lua`](https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary.lua) | The library itself — the only file you need to load with `loadstring` |
+| [`UILibrary_Demo.lua`](https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary_Demo.lua) | A full demo that exercises every function below — use it as a working reference |
 | `README.md` | This file |
 
 ---
