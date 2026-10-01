@@ -10,7 +10,7 @@ No dependencies. Drop in one file and go.
 
 ## Preview
 
-*(Add a screenshot or short GIF of the UI here, e.g. `![preview](./preview.png)`)*
+![Preview](https://files.catbox.moe/mpwvl2.jpg)
 
 ---
 
