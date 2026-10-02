@@ -12,26 +12,21 @@
 
 	QUICK START
 	-----------
+		local Window = Library.new({
+			Title       = "My Menu",
+			Description = "made with this library",
+			AccentColor = Color3.fromRGB(133, 127, 255),
+		});
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary.lua"))()
+		local Tab     = Window:NewTab({ Title = "Main" });
+		local Section = Tab:NewSection({ Title = "General", Position = "Left" });
 
-local Window = Library.new({
-    Title       = "My Menu",
-    Description = "made with this library",
-    AccentColor = Color3.fromRGB(133, 127, 255),
-})
-
-local Tab     = Window:NewTab({ Title = "Main" })
-local Section = Tab:NewSection({ Title = "General", Position = "Left" })
-
-Section:NewToggle({
-    Title    = "Example toggle",
-    Default  = false,
-    Flag     = "exampleToggle",
-    Callback = function(value)
-        print("Toggle status:", value)
-    end,
-})
+		Section:NewToggle({
+			Title    = "Example toggle",
+			Default  = false,
+			Flag     = "exampleToggle",   -- optional, see Flags below
+			Callback = function(value) end,
+		});
 
 	WHAT'S NEW IN THIS PASS
 	------------------------
@@ -958,7 +953,7 @@ function Library.new(config)
 			UIAspectRatioConstraint.AspectRatio = 6.250
 			UIAspectRatioConstraint.AspectType = Enum.AspectType.ScaleWithParentSize
 
-			UICorner.CornerRadius = UDim.new(0, 3)
+			UICorner.CornerRadius = UDim.new(0, 6)
 			UICorner.Parent = Selector
 
 			Title.Name = "Title"
@@ -993,7 +988,7 @@ function Library.new(config)
 			Frame.Size = UDim2.new(0.03, 0, 0.55, 0)
 			Frame.ZIndex = 104
 
-			UICorner_2.CornerRadius = UDim.new(0, 3)
+			UICorner_2.CornerRadius = UDim.new(0, 6)
 			UICorner_2.Parent = Frame
 
 			UIGradient_2.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 0.00), NumberSequenceKeypoint.new(0.84, 0.25), NumberSequenceKeypoint.new(1.00, 1.00)}
@@ -1243,7 +1238,7 @@ function Library.new(config)
 		Icon.ImageTransparency = 1
 		Twen:Create(Icon,TweenInfo2,{ImageTransparency = 0.1}):Play();
 
-		UICorner_2.CornerRadius = UDim.new(0, 3)
+		UICorner_2.CornerRadius = UDim.new(0, 6)
 		UICorner_2.Parent = Icon
 
 		UIGradient.Rotation = 90
@@ -1517,7 +1512,7 @@ function Library.new(config)
 			Icon.ImageTransparency = 1
 			Twen:Create(Icon,TweenInfo2,{ImageTransparency = 0.1}):Play();
 
-			UICorner_3.CornerRadius = UDim.new(0, 3)
+			UICorner_3.CornerRadius = UDim.new(0, 6)
 			UICorner_3.Parent = Icon
 
 			UIGradient.Rotation = 90
@@ -1592,7 +1587,11 @@ function Library.new(config)
 			UIGradient_4.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 0.00), NumberSequenceKeypoint.new(0.17, 1.00), NumberSequenceKeypoint.new(0.82, 1.00), NumberSequenceKeypoint.new(1.00, 0.00)}
 			UIGradient_4.Parent = UIStroke
 
-			function SectionTable:NewToggle(toggle)
+			function SectionTable:NewToggle(toggle, posDefault, posCallback)
+				if typeof(toggle) ~= 'table' then
+					toggle = {Title = toggle, Default = posDefault, Callback = posCallback};
+				end;
+
 				toggle = Config(toggle,{
 					Title = "Toggle",
 					Default = false,
@@ -1752,6 +1751,10 @@ function Library.new(config)
 				};
 
 				if toggle.Flag then
+					if WindowTable.Flags[toggle.Flag] then
+						warn('[UI Library] Flag "'..tostring(toggle.Flag)..'" is already in use - overwriting it.');
+					end;
+
 					WindowTable.Flags[toggle.Flag] = {
 						Type = "Toggle",
 						Get = function() return toggle.Default end,
@@ -1807,7 +1810,7 @@ function Library.new(config)
 				UIGradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 0.00), NumberSequenceKeypoint.new(0.84, 0.25), NumberSequenceKeypoint.new(1.00, 1.00)}
 				UIGradient.Parent = TextInt
 
-				UICorner.CornerRadius = UDim.new(0, 2)
+				UICorner.CornerRadius = UDim.new(0, 4)
 				UICorner.Parent = FunctionTitle
 
 				return {
@@ -1820,7 +1823,11 @@ function Library.new(config)
 				};
 			end;
 
-			function SectionTable:NewButton(cfg)
+			function SectionTable:NewButton(cfg, posCallback)
+				if typeof(cfg) ~= 'table' then
+					cfg = {Title = cfg, Callback = posCallback};
+				end;
+
 				cfg = Config(cfg,{
 					Title = "Button",
 					Callback = function() end;
@@ -1957,7 +1964,11 @@ function Library.new(config)
 				};
 			end;
 
-			function SectionTable:NewKeybind(ctfx)
+			function SectionTable:NewKeybind(ctfx, posDefault, posCallback)
+				if typeof(ctfx) ~= 'table' then
+					ctfx = {Title = ctfx, Default = posDefault, Callback = posCallback};
+				end;
+
 				ctfx = Config(ctfx,{
 					Title = "Keybind",
 					Callback = function() end,
@@ -2132,6 +2143,10 @@ function Library.new(config)
 				};
 
 				if ctfx.Flag then
+					if WindowTable.Flags[ctfx.Flag] then
+						warn('[UI Library] Flag "'..tostring(ctfx.Flag)..'" is already in use - overwriting it.');
+					end;
+
 					WindowTable.Flags[ctfx.Flag] = {
 						Type = "Keybind",
 						Get = function() return CurrentKey end,
@@ -2142,7 +2157,11 @@ function Library.new(config)
 				return KeybindAPI;
 			end;
 
-			function SectionTable:NewSlider(slider)
+			function SectionTable:NewSlider(slider, posMin, posMax, posDefault, posCallback)
+				if typeof(slider) ~= 'table' then
+					slider = {Title = slider, Min = posMin, Max = posMax, Default = posDefault, Callback = posCallback};
+				end;
+
 				slider = Config(slider,{
 					Title = "Slider",
 					Min = 0,
@@ -2324,6 +2343,10 @@ function Library.new(config)
 				};
 
 				if slider.Flag then
+					if WindowTable.Flags[slider.Flag] then
+						warn('[UI Library] Flag "'..tostring(slider.Flag)..'" is already in use - overwriting it.');
+					end;
+
 					WindowTable.Flags[slider.Flag] = {
 						Type = "Slider",
 						Get = function() return CurrentValue end,
@@ -2334,7 +2357,11 @@ function Library.new(config)
 				return SliderAPI;
 			end;
 
-			function SectionTable:NewDropdown(drop)
+			function SectionTable:NewDropdown(drop, posData, posDefault, posCallback)
+				if typeof(drop) ~= 'table' then
+					drop = {Title = drop, Data = posData, Default = posDefault, Callback = posCallback};
+				end;
+
 				drop = Config(drop,{
 					Title = "Dropdown",
 					Data = {'One','Two','Three','Four'},
@@ -2413,7 +2440,7 @@ function Library.new(config)
 				MFrame.Size = UDim2.new(0.949999988, 0, 0.375, 0)
 				MFrame.ZIndex = 18
 
-				UICorner_2.CornerRadius = UDim.new(0, 2)
+				UICorner_2.CornerRadius = UDim.new(0, 6)
 				UICorner_2.Parent = MFrame
 
 				UIStroke_2.Transparency = 0.975
@@ -2507,6 +2534,10 @@ function Library.new(config)
 				};
 
 				if drop.Flag then
+					if WindowTable.Flags[drop.Flag] then
+						warn('[UI Library] Flag "'..tostring(drop.Flag)..'" is already in use - overwriting it.');
+					end;
+
 					WindowTable.Flags[drop.Flag] = {
 						Type = "Dropdown",
 						Get = function() return drop.Default end,
@@ -2517,7 +2548,11 @@ function Library.new(config)
 				return DropdownAPI;
 			end;
 
-			function SectionTable:NewTextbox(conf)
+			function SectionTable:NewTextbox(conf, posDefault, posCallback)
+				if typeof(conf) ~= 'table' then
+					conf = {Title = conf, Default = posDefault, Callback = posCallback};
+				end;
+
 				conf = Config(conf,{
 					Title = "Textbox",
 					Default = '',
@@ -2597,7 +2632,7 @@ function Library.new(config)
 				MFrame.Size = UDim2.new(0.949999988, 0, 0.375, 0)
 				MFrame.ZIndex = 18
 
-				UICorner_2.CornerRadius = UDim.new(0, 2)
+				UICorner_2.CornerRadius = UDim.new(0, 6)
 				UICorner_2.Parent = MFrame
 
 				UIStroke_2.Transparency = 0.975
@@ -2681,6 +2716,10 @@ function Library.new(config)
 				};
 
 				if conf.Flag then
+					if WindowTable.Flags[conf.Flag] then
+						warn('[UI Library] Flag "'..tostring(conf.Flag)..'" is already in use - overwriting it.');
+					end;
+
 					WindowTable.Flags[conf.Flag] = {
 						Type = "Textbox",
 						Get = function() return CurrentValue end,
@@ -2987,6 +3026,10 @@ function Library.new(config)
 				};
 
 				if cfg.Flag then
+					if WindowTable.Flags[cfg.Flag] then
+						warn('[UI Library] Flag "'..tostring(cfg.Flag)..'" is already in use - overwriting it.');
+					end;
+
 					WindowTable.Flags[cfg.Flag] = {
 						Type = "ColorPicker",
 						Get = function() return CurrentColor end,
@@ -3293,6 +3336,14 @@ function Library.new(config)
 		return ok;
 	end;
 
+	function WindowTable:SetTitle(newTitle)
+		Title.Text = newTitle;
+	end;
+
+	function WindowTable:SetKeybind(newKey)
+		WindowTable.Keybind = newKey;
+	end;
+
 	return WindowTable;
 end;
 
@@ -3302,6 +3353,10 @@ Library.NewAuth = function(conf)
 		GetKey = function() return 'https://example.com' end,
 		Auth = function(key) if key == '1 or 1' then return key; end; end,
 		Freeze = false,
+		GamePassId = nil,          -- optional: set a gamepass id to add a "buy to skip the key" button
+		MaxAttempts = nil,         -- optional: kick after this many wrong keys (nil = no limit)
+		KickMessage = "Too many incorrect key attempts.",
+		AntiHook = false,          -- optional: kick if Auth/GetKey get hooked out from under the script
 	});
 
 
@@ -3349,6 +3404,13 @@ Library.NewAuth = function(conf)
 	local Title = Instance.new("TextLabel")
 	local UIGradient_2 = Instance.new("UIGradient")
 	local UICorner_6 = Instance.new("UICorner")
+	local StatusLabel = Instance.new("TextLabel")
+	local CloseButton = Instance.new("TextButton")
+	local UICorner_7 = Instance.new("UICorner")
+	local BuyButton = Instance.new("TextButton")
+	local UICorner_8 = Instance.new("UICorner")
+	local DropShadow_4 = Instance.new("ImageLabel")
+	local UIStroke_4 = Instance.new("UIStroke")
 
 	ScreenGui.Parent = CoreGui
 	ScreenGui.IgnoreGuiInset = true
@@ -3403,7 +3465,7 @@ Library.NewAuth = function(conf)
 	UIGradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(0.05, 0.00), NumberSequenceKeypoint.new(0.96, 0.00), NumberSequenceKeypoint.new(1.00, 1.00)}
 	UIGradient.Parent = BlockFrame
 
-	UICorner_2.CornerRadius = UDim.new(0, 7)
+	UICorner_2.CornerRadius = UDim.new(0, 10)
 	UICorner_2.Parent = MainFrame
 
 	Button2.Name = "Button2"
@@ -3421,7 +3483,7 @@ Library.NewAuth = function(conf)
 	Button2.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Button2.TextSize = 14.000
 
-	UICorner_3.CornerRadius = UDim.new(0, 2)
+	UICorner_3.CornerRadius = UDim.new(0, 6)
 	UICorner_3.Parent = Button2
 
 	DropShadow.Name = "DropShadow"
@@ -3463,7 +3525,7 @@ Library.NewAuth = function(conf)
 	TextBox.TextTransparency = 0.250
 	TextBox.TextWrapped = true
 
-	UICorner_4.CornerRadius = UDim.new(0, 2)
+	UICorner_4.CornerRadius = UDim.new(0, 6)
 	UICorner_4.Parent = TextBox
 
 	DropShadow_2.Name = "DropShadow"
@@ -3501,7 +3563,7 @@ Library.NewAuth = function(conf)
 	Button1.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Button1.TextSize = 14.000
 
-	UICorner_5.CornerRadius = UDim.new(0, 2)
+	UICorner_5.CornerRadius = UDim.new(0, 6)
 	UICorner_5.Parent = Button1
 
 	DropShadow_3.Name = "DropShadow"
@@ -3561,10 +3623,139 @@ Library.NewAuth = function(conf)
 	UIGradient_2.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 0.00), NumberSequenceKeypoint.new(0.75, 0.27), NumberSequenceKeypoint.new(1.00, 1.00)}
 	UIGradient_2.Parent = Title
 
-	UICorner_6.CornerRadius = UDim.new(0, 7)
+	UICorner_6.CornerRadius = UDim.new(0, 10)
 	UICorner_6.Parent = MainFrame
 
+	StatusLabel.Name = "StatusLabel"
+	StatusLabel.Parent = MainFrame
+	StatusLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	StatusLabel.BackgroundTransparency = 1.000
+	StatusLabel.Position = UDim2.new(0.5, 0, 0.465, 0)
+	StatusLabel.Size = UDim2.new(0.85, 0, 0.08, 0)
+	StatusLabel.ZIndex = 3
+	StatusLabel.Font = Enum.Font.GothamBold
+	StatusLabel.Text = ""
+	StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	StatusLabel.TextScaled = true
+	StatusLabel.TextSize = 11.000
+	StatusLabel.TextTransparency = 1
+	StatusLabel.TextWrapped = true
+
+	CloseButton.Name = "CloseButton"
+	CloseButton.Parent = MainFrame
+	CloseButton.AnchorPoint = Vector2.new(1, 0)
+	CloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	CloseButton.BackgroundTransparency = 0.6
+	CloseButton.BorderSizePixel = 0
+	CloseButton.Position = UDim2.new(0.97, 0, 0.05, 0)
+	CloseButton.Size = UDim2.new(0, 20, 0, 20)
+	CloseButton.ZIndex = 4
+	CloseButton.Font = Enum.Font.GothamBold
+	CloseButton.Text = "x"
+	CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	CloseButton.TextSize = 13.000
+
+	UICorner_7.CornerRadius = UDim.new(0, 6)
+	UICorner_7.Parent = CloseButton
+
+	BuyButton.Name = "BuyButton"
+	BuyButton.Parent = MainFrame
+	BuyButton.Visible = false
+	BuyButton.AnchorPoint = Vector2.new(0.5, 0.5)
+	BuyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	BuyButton.BackgroundTransparency = 0.500
+	BuyButton.BorderSizePixel = 0
+	BuyButton.Position = UDim2.new(0.5, 0, 0.855, 0)
+	BuyButton.Size = UDim2.new(0.9, 0, 0.12, 0)
+	BuyButton.ZIndex = 3
+	BuyButton.Font = Enum.Font.GothamBold
+	BuyButton.Text = "BUY WITH ROBUX"
+	BuyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	BuyButton.TextSize = 13.000
+
+	UICorner_8.CornerRadius = UDim.new(0, 6)
+	UICorner_8.Parent = BuyButton
+
+	DropShadow_4.Name = "DropShadow"
+	DropShadow_4.Parent = BuyButton
+	DropShadow_4.AnchorPoint = Vector2.new(0.5, 0.5)
+	DropShadow_4.BackgroundTransparency = 1.000
+	DropShadow_4.BorderSizePixel = 0
+	DropShadow_4.Position = UDim2.new(0.5, 0, 0.5, 0)
+	DropShadow_4.Size = UDim2.new(1, 37, 1, 37)
+	DropShadow_4.Image = "rbxassetid://6015897843"
+	DropShadow_4.ImageColor3 = Color3.fromRGB(0, 0, 0)
+	DropShadow_4.ImageTransparency = 0.600
+	DropShadow_4.ScaleType = Enum.ScaleType.Slice
+	DropShadow_4.SliceCenter = Rect.new(49, 49, 450, 450)
+
+	UIStroke_4.Transparency = 1
+	UIStroke_4.Color = Color3.fromRGB(95, 240, 150)
+	UIStroke_4.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	UIStroke_4.Parent = BuyButton
+	Twen:Create(UIStroke_4,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
+		Transparency = 0.900
+	}):Play();
+
 	local id = tostring(math.random(1,100))..tostring(math.random(1,100))..tostring(math.random(1,100))..tostring(math.random(1,100))..tostring(math.random(1,100))..tostring(math.random(1,100))..tostring(tick()):reverse();
+
+	local Marketplace = game:GetService('MarketplaceService');
+	local attemptsLeft = conf.MaxAttempts;
+	local succeeded = false;
+
+	local function doClose()
+		Twen:Create(MainDropShadow,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
+			ImageTransparency = 1
+		}):Play();
+
+		BlueEffect.Destroy();
+
+
+		for i,v in ipairs(cose) do
+			game:GetService('RunService'):UnbindFromRenderStep(v);
+		end;
+
+		Twen:Create(MainFrame,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
+			Size = UDim2.new(0.8,0,0.8,0)
+		}):Play();
+
+		task.delay(1,function()
+			Twen:Create(MainFrame,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
+				Position = UDim2.new(0.5, 0, 1.5, 0),
+				Size = UDim2.new(0.8,0,0.8,0)
+			}):Play();
+
+			task.delay(1.2,function()
+
+				ScreenGui:Destroy()
+
+			end)
+		end)
+	end;
+
+	local function showStatus(ok, msg)
+		StatusLabel.Text = msg;
+		StatusLabel.TextColor3 = ok and Color3.fromRGB(95, 240, 150) or Color3.fromRGB(255, 90, 90);
+		StatusLabel.TextTransparency = 1;
+		Twen:Create(StatusLabel,TweenInfo.new(0.15,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
+			TextTransparency = 0
+		}):Play();
+
+		task.delay(1.6,function()
+			Twen:Create(StatusLabel,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
+				TextTransparency = 1
+			}):Play();
+		end)
+	end;
+
+	local function succeed(msg)
+		if succeeded then return end;
+		succeeded = true;
+
+		showStatus(true, msg or "Correct key");
+		vaid:Fire(id);
+		doClose();
+	end;
 
 	Button1.MouseButton1Click:Connect(function()
 		local str = conf.GetKey();
@@ -3585,11 +3776,72 @@ Library.NewAuth = function(conf)
 		if str then
 			TextBox.Text = "*/*/*/*/*/*/*/*/*/*/*/*/*/*";
 
-			vaid:Fire(id)
+			succeed("Correct key");
 		else
 			TextBox.Text = "";
+			showStatus(false, "Incorrect key");
+
+			if attemptsLeft then
+				attemptsLeft -= 1;
+
+				if attemptsLeft <= 0 then
+					LocalPlayer:Kick(conf.KickMessage);
+				end;
+			end;
 		end;
 	end);
+
+	CloseButton.MouseButton1Click:Connect(function()
+		doClose();
+	end);
+
+	if conf.GamePassId then
+		BuyButton.Visible = true;
+
+		task.spawn(function()
+			local owns = false;
+
+			pcall(function()
+				owns = Marketplace:UserOwnsGamePassAsync(LocalPlayer.UserId, conf.GamePassId);
+			end);
+
+			if owns then
+				succeed("Gamepass already owned");
+			end;
+		end);
+
+		BuyButton.MouseButton1Click:Connect(function()
+			pcall(function()
+				Marketplace:PromptGamePassPurchase(LocalPlayer, conf.GamePassId);
+			end);
+		end);
+
+		Marketplace.PromptGamePassPurchaseFinished:Connect(function(player, gamePassId, wasPurchased)
+			if player == LocalPlayer and gamePassId == conf.GamePassId and wasPurchased then
+				succeed("Purchase complete");
+			end;
+		end);
+	end;
+
+	if conf.AntiHook then
+		task.spawn(function()
+			while ScreenGui and ScreenGui.Parent and not succeeded do
+				task.wait(2);
+
+				local hooked = false;
+
+				pcall(function()
+					if debug.info(conf.Auth,'s') == '[C]' then hooked = true end;
+					if debug.info(conf.GetKey,'s') == '[C]' then hooked = true end;
+				end);
+
+				if hooked then
+					LocalPlayer:Kick('•~•');
+					break;
+				end;
+			end;
+		end);
+	end;
 
 	if conf.Freeze then
 		while ScreenGui do task.wait();
@@ -3602,35 +3854,7 @@ Library.NewAuth = function(conf)
 	end;
 
 	return {
-		Close = function()
-			Twen:Create(MainDropShadow,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
-				ImageTransparency = 1
-			}):Play();
-
-			BlueEffect.Destroy();
-
-
-			for i,v in ipairs(cose) do
-				game:GetService('RunService'):UnbindFromRenderStep(v);
-			end;
-
-			Twen:Create(MainFrame,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
-				Size = UDim2.new(0.8,0,0.8,0)
-			}):Play();
-
-			task.delay(1,function()
-				Twen:Create(MainFrame,TweenInfo.new(1,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{
-					Position = UDim2.new(0.5, 0, 1.5, 0),
-					Size = UDim2.new(0.8,0,0.8,0)
-				}):Play();
-
-				task.delay(1.2,function()
-
-					ScreenGui:Destroy()
-
-				end)
-			end)
-		end,
+		Close = doClose,
 	}
 end;
 
@@ -3647,18 +3871,19 @@ Library.Notification = function()
 	Notification.IgnoreGuiInset = true
 
 	Frame.Parent = Notification
-	Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	Frame.AnchorPoint = Vector2.new(1, 1)
 	Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	Frame.BackgroundTransparency = 1.000
 	Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	Frame.BorderSizePixel = 0
-	Frame.Position = UDim2.new(0.151568726, 0, 0.5, 0)
+	Frame.Position = UDim2.new(1, -20, 1, -20) -- pinned to the bottom-right edge, 20px padding (PC & mobile)
 	Frame.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
 	Frame.SizeConstraint = Enum.SizeConstraint.RelativeYY
 
 	UIListLayout.Parent = Frame
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 	UIListLayout.Padding = UDim.new(0,2);
 
 	return {
@@ -3670,46 +3895,70 @@ Library.Notification = function()
 				Icon = "rbxassetid://7733993369"
 			})
 			local css_style = TweenInfo.new(0.5,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut);
+
+			-- Holder carries the Size (and therefore the slot in the list);
+			-- Glow and Notifiy both just fill Holder, so they automatically
+			-- stay the same size/shape as each other with no extra syncing.
+			local Holder = Instance.new("Frame")
+			local Glow = Instance.new("Frame")
+			local GlowCorner = Instance.new("UICorner")
 			local Notifiy = Instance.new("Frame")
 			local UICorner = Instance.new("UICorner")
+			local ClickCatcher = Instance.new("TextButton")
 			local icon = Instance.new("ImageLabel")
 			local UICorner_2 = Instance.new("UICorner")
 			local TextLabel = Instance.new("TextLabel")
 			local TextLabel_2 = Instance.new("TextLabel")
-			local DropShadow = Instance.new('ImageLabel')
 
-			DropShadow.Name = "DropShadow"
-			DropShadow.Parent = Notifiy
-			DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-			DropShadow.BackgroundTransparency = 1.000
-			DropShadow.BorderSizePixel = 0
-			DropShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-			DropShadow.Size = UDim2.new(1, 37, 1, 37)
-			DropShadow.Image = "rbxassetid://6015897843"
-			DropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-			DropShadow.ImageTransparency = 1
-			DropShadow.ScaleType = Enum.ScaleType.Slice
-			DropShadow.Rotation = 0.001
-			DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-			Twen:Create(DropShadow,css_style,{
-				ImageTransparency = 0.600
+			Holder.Name = "Holder"
+			Holder.Parent = Frame
+			Holder.BackgroundTransparency = 1
+			Holder.BorderSizePixel = 0
+			Holder.Size = UDim2.new(0,0,0,0)
+
+			Glow.Name = "Glow"
+			Glow.Parent = Holder
+			Glow.AnchorPoint = Vector2.new(0.5, 0.5)
+			Glow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Glow.BackgroundTransparency = 1
+			Glow.BorderSizePixel = 0
+			Glow.Position = UDim2.new(0.5, 0, 0.5, 0)
+			Glow.Size = UDim2.new(1, 14, 1, 14) -- slightly larger than Notifiy, same corner radius below
+			Glow.ZIndex = 1
+			Twen:Create(Glow,css_style,{
+				BackgroundTransparency = 0.650
 			}):Play()
 
+			GlowCorner.CornerRadius = UDim.new(0.3, 0)
+			GlowCorner.Parent = Glow
+
 			Notifiy.Name = "Notifiy"
-			Notifiy.Parent = Frame
+			Notifiy.Parent = Holder
 			Notifiy.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 			Notifiy.BackgroundTransparency = 1
 			Notifiy.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			Notifiy.BorderSizePixel = 0
 			Notifiy.ClipsDescendants = true
-			Notifiy.Size = UDim2.new(0,0,0,0)
+			Notifiy.Size = UDim2.new(1, 0, 1, 0)
+			Notifiy.ZIndex = 2
 			Twen:Create(Notifiy,css_style,{
 				BackgroundTransparency = 0.350,
+			}):Play()
+			Twen:Create(Holder,css_style,{
 				Size = UDim2.new(0.2, 0, 0.2, 0)
 			}):Play()
 
 			UICorner.CornerRadius = UDim.new(0.3,0)
 			UICorner.Parent = Notifiy
+
+			ClickCatcher.Name = "ClickCatcher"
+			ClickCatcher.Parent = Notifiy
+			ClickCatcher.BackgroundTransparency = 1
+			ClickCatcher.BorderSizePixel = 0
+			ClickCatcher.Size = UDim2.new(1, 0, 1, 0)
+			ClickCatcher.ZIndex = 5
+			ClickCatcher.Text = ""
+			ClickCatcher.AutoButtonColor = false
 
 			icon.Name = "icon"
 			icon.Parent = Notifiy
@@ -3769,12 +4018,16 @@ Library.Notification = function()
 			TextLabel_2.TextYAlignment = Enum.TextYAlignment.Top
 
 			local mkView = function()
-				Twen:Create(Notifiy,css_style,{
+				Twen:Create(Holder,css_style,{
 					Size = UDim2.new(1, 0, 0.2, 0)
 				}):Play()
 
 				Twen:Create(UICorner,css_style,{
-					CornerRadius = UDim.new(0, 4)
+					CornerRadius = UDim.new(0, 6)
+				}):Play()
+
+				Twen:Create(GlowCorner,css_style,{
+					CornerRadius = UDim.new(0, 6)
 				}):Play()
 
 				Twen:Create(icon,css_style,{
@@ -3792,11 +4045,15 @@ Library.Notification = function()
 
 
 			local mkLoad = function()
-				Twen:Create(Notifiy,css_style,{
+				Twen:Create(Holder,css_style,{
 					Size = UDim2.new(0.2, 0, 0.2, 0)
 				}):Play()
 
 				Twen:Create(UICorner,css_style,{
+					CornerRadius = UDim.new(0.4,0)
+				}):Play()
+
+				Twen:Create(GlowCorner,css_style,{
 					CornerRadius = UDim.new(0.4,0)
 				}):Play()
 
@@ -3815,32 +4072,49 @@ Library.Notification = function()
 
 			mkLoad();
 
+			local dismissed = false;
+			local function dismiss()
+				if dismissed then return end;
+				dismissed = true;
+
+				mkLoad();
+
+				task.wait(0.65)
+
+				Twen:Create(Notifiy,css_style,{
+					BackgroundTransparency = 1,
+				}):Play()
+
+				Twen:Create(Glow,css_style,{
+					BackgroundTransparency = 1,
+				}):Play()
+
+				Twen:Create(Holder,css_style,{
+					Size = UDim2.new(0,0,0,0)
+				}):Play()
+
+				Twen:Create(icon,css_style,{
+					ImageTransparency = 1
+				}):Play()
+
+				task.delay(0.5,Holder.Destroy,Holder)
+			end;
+
+			ClickCatcher.MouseButton1Click:Connect(function()
+				-- quick white flash, then dismiss right away
+				Twen:Create(Notifiy,TweenInfo.new(0.1),{
+					BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+					BackgroundTransparency = 0.1,
+				}):Play();
+
+				task.delay(0.1,dismiss);
+			end)
+
 			task.spawn(function()
 				task.wait(0.5)
 				mkView();
 
-
-
-				task.delay(1 + ctfx.Duration,function()
-					mkLoad();
-
-					task.wait(0.65)
-
-					Twen:Create(Notifiy,css_style,{
-						BackgroundTransparency = 1,
-						Size = UDim2.new(0,0,0,0)
-					}):Play()
-
-					Twen:Create(icon,css_style,{
-						ImageTransparency = 1
-					}):Play()
-
-					Twen:Create(DropShadow,css_style,{
-						ImageTransparency = 1
-					}):Play()
-
-					task.delay(0.5,Notifiy.Destroy,Notifiy)
-				end)
+				task.delay(1 + ctfx.Duration,dismiss)
 			end)
 		end,
 	}
@@ -3877,7 +4151,7 @@ function Library:Console()
 	MFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 	MFrame.Size = UDim2.new(0.075000003, 450, 0.075000003, 300)
 
-	UICorner.CornerRadius = UDim.new(0, 4)
+	UICorner.CornerRadius = UDim.new(0, 8)
 	UICorner.Parent = MFrame
 
 	DropShadow.Name = "DropShadow"
