@@ -2,9 +2,10 @@
 	UI Library — feature demo / test script
 	----------------------------------------
 	Exercises every public function of UILibrary.lua so you can see the
-	whole thing working end to end: every element type, the new Flag
-	system, SaveConfig/LoadConfig, SetTheme, SetRainbow, Notification
-	and the Console.
+	whole thing working end to end: every element type (both the config-
+	table form and the 1.1 Kavo-style simple-call form), the Flag system,
+	SaveConfig/LoadConfig, SetTheme, SetRainbow, SetTitle/SetKeybind,
+	Notification and the Console.
 
 	UILibrary.lua ends with `return table.freeze(Library)`, so it has
 	to be loaded through loadstring (NOT just pasted above this file
@@ -92,6 +93,23 @@ PlayerSection:NewButton({
 		});
 	end,
 });
+
+----------------------------------------------------------------
+-- 3b. Same section, but calling things the "simple" (Kavo-style)
+--     way: plain arguments instead of a config table. Both styles
+--     work on the same element types — use whichever reads better.
+----------------------------------------------------------------
+PlayerSection:NewDivider({ Title = "Simple calls" });
+
+PlayerSection:NewToggle("Simple Toggle", false, function(value) end);
+PlayerSection:NewSlider("Jump Power", 50, 200, 50, function(value)
+	local char = game:GetService("Players").LocalPlayer.Character;
+	local hum = char and char:FindFirstChildOfClass("Humanoid");
+	if hum then hum.JumpPower = value end;
+end);
+PlayerSection:NewButton("Simple Button", function()
+	Notify.new({ Title = "Simple Button", Description = "Called with 2 plain arguments, no table.", Duration = 3 });
+end);
 
 ----------------------------------------------------------------
 -- 4. Visuals section — Divider, Dropdown (theme), ColorPicker,
@@ -190,6 +208,8 @@ Notify.new({
 -- 8. Key System (Library.NewAuth) — optional, NOT called above.
 --    Uncomment to see the auth screen. Move it above section 1 and
 --    set Freeze = true if you want it to gate the rest of the script.
+--    For a full walkthrough of every 1.1 Auth feature (feedback,
+--    MaxAttempts, AntiHook, GamePassId), see KeySystem_Example.lua.
 ----------------------------------------------------------------
 --[[
 local Auth = Library.NewAuth({
@@ -200,6 +220,9 @@ local Auth = Library.NewAuth({
 	Auth = function(key)
 		return key == "letmein" -- replace with your own check
 	end,
-	Freeze = false, -- true = blocks script execution until a correct key is entered
+	Freeze = false,        -- true = blocks script execution until Auth succeeds
+	MaxAttempts = 3,       -- optional: kick after this many wrong keys
+	AntiHook = true,       -- optional: best-effort kick if Auth/GetKey get hooked
+	-- GamePassId = 123456789, -- optional: adds a "BUY WITH ROBUX" button
 });
 ]]
