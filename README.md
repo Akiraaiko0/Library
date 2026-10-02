@@ -10,7 +10,8 @@ No dependencies. Drop in one file and go.
 
 ## Preview
 
-*(Add a screenshot or short GIF of the UI here, e.g. `![preview](./preview.png)`)*
+![preview](https://files.catbox.moe/j0iqpd.jpg)
+![Preview](https://files.catbox.moe/qm4jf2.jpg)
 
 ---
 
