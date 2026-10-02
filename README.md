@@ -1,6 +1,6 @@
 # UI Library
 
-![version](https://img.shields.io/badge/version-1.0.0-7f7fff) ![platform](https://img.shields.io/badge/platform-Roblox-black) ![language](https://img.shields.io/badge/language-Luau-blue)
+![version](https://img.shields.io/badge/version-1.1.0-7f7fff) ![platform](https://img.shields.io/badge/platform-Roblox-black) ![language](https://img.shields.io/badge/language-Luau-blue)
 
 A single-file Roblox GUI component library: a floating, draggable window with tabs, sections, and a full set of ready-made controls — toggle, slider, dropdown, textbox, keybind, button, title, color picker, paragraph and divider. It also ships a key-system screen, a toast notification queue, a theme system, a save/load config system, and a small terminal easter egg.
 
@@ -10,7 +10,7 @@ No dependencies. Drop in one file and go.
 
 ## Preview
 
-![Preview](https://files.catbox.moe/mpwvl2.jpg)
+*(Add a screenshot or short GIF of the UI here, e.g. `![preview](./preview.png)`)*
 
 ---
 
@@ -71,8 +71,8 @@ No dependencies. Drop in one file and go.
 
 | File | Purpose |
 |---|---|
-| [`UILibrary.lua`](https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary.lua) | The library itself — the only file you need to load with `loadstring` |
-| [`UILibrary_Demo.lua`](https://raw.githubusercontent.com/Akiraaiko0/Library/main/UILibrary_Demo.lua) | A full demo that exercises every function below — use it as a working reference |
+| [`UILibrary.lua`](./UILibrary.lua) | The library itself — the only file you need to load with `loadstring` |
+| [`UILibrary_Demo.lua`](./UILibrary_Demo.lua) | A full demo that exercises every function below — use it as a working reference |
 | `README.md` | This file |
 
 ---
@@ -189,6 +189,16 @@ local Right = Tab:NewSection({ Title = "Visuals", Position = "Right" })
 
 Every element below is called as `Section:NewX({ ...config... })` and returns a small API table you can use to control it afterward. Any element that takes a `Flag` registers itself automatically — see [Flags & config persistence](#flags--config-persistence).
 
+**Simple form.** Toggle, Slider, Dropdown, Textbox, Keybind and Button also accept plain positional arguments instead of a config table, Kavo-style, if you just want the quickest possible call:
+
+```lua
+Section:NewToggle("Example", false, function(value) end)
+Section:NewSlider("Speed", 16, 100, 16, function(value) end)
+Section:NewButton("Click me", function() end)
+```
+
+This is just a shorthand for the config-table form — pass a table as the first argument (as in every example below) any time you also want `Flag` or the other optional fields; pass a plain value and the library builds the table for you.
+
 ### `Section:NewToggle(config)`
 
 | Field | Type | Default |
@@ -199,6 +209,7 @@ Every element below is called as `Section:NewX({ ...config... })` and returns a 
 | `Callback` | `function(value: boolean)` | no-op |
 
 **Returns:** `{ Value(bool), Visible(bool) }`
+**Simple form:** `Section:NewToggle(title, default, callback)`
 
 ```lua
 local MyToggle = Section:NewToggle({
@@ -221,6 +232,7 @@ MyToggle.Visible(false) -- hide the row
 | `Callback` | `function(value: number)` | no-op |
 
 **Returns:** `{ Visible(bool), Value(number) }`
+**Simple form:** `Section:NewSlider(title, min, max, default, callback)`
 
 ### `Section:NewDropdown(config)`
 
@@ -233,6 +245,7 @@ MyToggle.Visible(false) -- hide the row
 | `Callback` | `function(value: string)` | no-op |
 
 **Returns:** `{ Visible(bool), Value(string), Open(), Close(), Clear(), Set(newData: {string}) }`
+**Simple form:** `Section:NewDropdown(title, data, default, callback)`
 
 ```lua
 Section:NewDropdown({
@@ -254,6 +267,7 @@ Section:NewDropdown({
 | `Callback` | `function(text: string)` | no-op, fires on focus lost |
 
 **Returns:** `{ Visible(bool), Value(newText: string) }`
+**Simple form:** `Section:NewTextbox(title, default, callback)`
 
 ### `Section:NewKeybind(config)`
 
@@ -265,6 +279,7 @@ Section:NewDropdown({
 | `Callback` | `function(key: Enum.KeyCode)` | no-op |
 
 **Returns:** `{ Visible(bool), Value(newKey: Enum.KeyCode) }`
+**Simple form:** `Section:NewKeybind(title, default, callback)`
 
 Click the keybind box, then press any key to rebind it.
 
@@ -276,6 +291,7 @@ Click the keybind box, then press any key to rebind it.
 | `Callback` | `function()` | no-op |
 
 **Returns:** `{ Visible(bool), Fire }` — `Fire` is the callback itself, so `MyButton.Fire()` triggers it programmatically.
+**Simple form:** `Section:NewButton(title, callback)`
 
 ### `Section:NewTitle(text)`
 
@@ -342,12 +358,16 @@ Section:NewColorPicker({
 | `Window:GetThemes()` | Returns `{string}` — the names of all built-in presets |
 | `Window:SaveConfig(name: string)` | Writes every flagged input's value to disk as JSON. Returns `true`/`false` |
 | `Window:LoadConfig(name: string)` | Reads a previously saved config and applies it. Returns `true`/`false` |
+| `Window:SetTitle(newTitle: string)` | *New in 1.1.* Changes the window's title text live |
+| `Window:SetKeybind(newKey: Enum.KeyCode)` | *New in 1.1.* Changes the show/hide keybind live |
 | `Window.Flags` | Table of `{ [flagName] = { Get, Set, Type } }` — see below |
 
 ```lua
 Window:SetAccentColor(Color3.fromRGB(255, 80, 80))
 Window:SetRainbow(true)  -- cycles the accent color continuously
 Window:SetRainbow(false) -- stop and keep whatever color it last landed on
+Window:SetTitle("New Title")
+Window:SetKeybind(Enum.KeyCode.RightShift)
 ```
 
 ---
@@ -403,9 +423,15 @@ A standalone key-system / license screen. Call it **before** building your main 
 | `Title` | string | `"Nothing $ KEY SYSTEM"` |
 | `GetKey` | `function(): string` | returns an example URL, copied to the clipboard when the user clicks "Get Key" |
 | `Auth` | `function(key: string): any` | return a truthy value to accept the key |
-| `Freeze` | boolean | `false` — if `true`, **yields the script** until a correct key is entered |
+| `Freeze` | boolean | `false` — if `true`, **yields the script** until a correct key (or a gamepass purchase) is accepted |
+| `GamePassId` | number, optional | *New in 1.1.* Set this to show a "BUY WITH ROBUX" button as an alternative to typing a key — ownership is checked automatically on load, and again right after a purchase |
+| `MaxAttempts` | number, optional | *New in 1.1.* Kicks the player after this many wrong keys in a row. `nil` (default) = no limit |
+| `KickMessage` | string | *New in 1.1.* `"Too many incorrect key attempts."` — shown on the kick screen when `MaxAttempts` is hit |
+| `AntiHook` | boolean | *New in 1.1.* `false` — best-effort: periodically re-checks that `Auth`/`GetKey` haven't been hooked out from under the script, and kicks if they have. See the caveat below. |
 
-**Returns:** `{ Close() }` — dismisses the screen with its closing animation.
+**Returns:** `{ Close() }` — dismisses the screen with its closing animation. Also wired to a small **✕** button in the corner of the screen itself.
+
+As of 1.1, entering a key now shows a green "Correct" / red "Incorrect" message right on the screen, and on success the Auth window **closes itself automatically** before your script continues — you don't need to call `Close()` yourself in that case.
 
 ```lua
 local Auth = Library.NewAuth({
@@ -413,11 +439,18 @@ local Auth = Library.NewAuth({
     GetKey = function() return "https://example.com/get-key" end,
     Auth = function(key) return key == "my-secret-key" end,
     Freeze = true,
+
+    GamePassId = 123456789,   -- optional: "BUY WITH ROBUX" skips the key entirely
+    MaxAttempts = 3,
+    KickMessage = "Too many incorrect key attempts.",
+    AntiHook = true,
 })
--- execution only reaches here once Auth succeeds
+-- execution only reaches here once Auth succeeds (by key or by owning the gamepass)
 ```
 
 > `GetKey` and `Auth` must be real Lua functions you define — the library explicitly rejects native/C functions here so the default placeholders can't accidentally ship as-is.
+
+> **On `AntiHook`:** this is a best-effort check, not a guarantee — like any client-side anti-tamper, a determined attacker can usually still find a way around it. It only re-verifies that `conf.Auth` and `conf.GetKey` specifically haven't been swapped for a hooked C closure; it does not monitor anything else in your script.
 
 ---
 
@@ -442,6 +475,8 @@ Notify.new({
 })
 ```
 
+Toasts stack from the bottom-right corner of the screen. Click one to dismiss it early (a quick white flash, then it's gone) instead of waiting out its `Duration`.
+
 ---
 
 ### `Library:Console()`
@@ -462,7 +497,7 @@ Library:Console()
 - **`Freeze = true` on `Library.NewAuth` blocks the thread it's called on.** Call it from its own `task.spawn`, or simply accept that the rest of your script won't run until the key is entered.
 - **`SaveConfig`/`LoadConfig` quietly no-op** (return `false`) on executors without file-system support — always check the return value before assuming a save actually happened.
 - **Dragging** works from the header area of the main window; the Console window is independently draggable too.
-- Keep `Window.Flags` names unique across your whole menu — reusing a flag name on two different elements means the second one silently overwrites the first in `Window.Flags`.
+- Keep `Window.Flags` names unique across your whole menu. Reusing a flag name still means the second element overwrites the first in `Window.Flags` — as of 1.1 you'll at least get a `warn()` in the console when it happens, instead of it happening silently.
 
 ---
 
@@ -481,7 +516,10 @@ Your executor doesn't expose `writefile` / `readfile` / `isfile` / `makefolder` 
 No. It's built for script executors — it relies on executor-only globals like `gethui` (with safe fallbacks to `CoreGui`) and expects to be loaded with `loadstring`, which Studio's normal script contexts don't allow.
 
 **Can I change the window title, keybind, etc. after creating it?**
-Not directly for `Title`/`Keybind` today — set them once in `Library.new({...})`. Most per-element and whole-window *style* things (accent color, theme, rainbow) can be changed anytime through the `Window:Set...` methods above.
+Yes — `Window:SetTitle(newTitle)` and `Window:SetKeybind(newKey)` (new in 1.1) cover those live. Style things (accent color, theme, rainbow) can also be changed anytime through the `Window:Set...` methods above.
+
+**I used the same `Flag` on two elements by accident — how do I know?**
+The console will print a `warn()` the moment the second one registers, naming the flag. The second element still wins (it overwrites the first in `Window.Flags`) — the warning is just so you notice, not a hard error.
 
 ---
 
@@ -494,6 +532,15 @@ Not directly for `Title`/`Keybind` today — set them once in `Library.new({...}
 ---
 
 ## Changelog
+
+### 1.1.0
+
+- **Added:** `Window:SetTitle` / `Window:SetKeybind` — change the title and show/hide keybind after the window is already built.
+- **Added:** plain positional-argument calls for Toggle, Slider, Dropdown, Textbox, Keybind and Button (Kavo-style), alongside the existing config-table form — see [Section elements](#section-elements).
+- **Added (Key System):** on-screen correct/incorrect feedback, automatic close-on-success, a **✕** close button, `GamePassId` (buy-with-Robux bypass), `MaxAttempts`/`KickMessage` (kick after too many wrong keys), and `AntiHook` (best-effort hook detection).
+- **Added:** `warn()` when a `Flag` name is reused, instead of silently overwriting the earlier entry in `Window.Flags`.
+- **Changed (Notifications):** toasts now anchor to the bottom-right corner instead of a fixed on-screen position, click to dismiss early, and their shadow now matches the card's actual rounded shape (circular when collapsed, rounded-rectangle when expanded) instead of a static image.
+- **Changed:** rounded several corners that were still sharp (2–3px) left over from the original theme, so they're consistent with the softer look introduced in 1.0 (Tab/Section icons, Title underline, Dropdown/Textbox inner boxes, Key System's buttons and window, Console).
 
 ### 1.0.0
 
@@ -521,8 +568,7 @@ Issues and pull requests are welcome.
 ## Credits
 
 - Icons loaded from the [lucideblox](https://github.com/evoincorp/lucideblox) icon set.
-- Create a library by [mm55061](https://www.roblox.com/users/4737901580/profile) wow
-  
+
 ---
 
 ## License
